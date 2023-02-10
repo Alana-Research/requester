@@ -1,0 +1,13 @@
+test name 1:
+  httpUrl: https://www.google.com
+  expectedStatusCode: 200
+
+test name 2:
+  httpUrl: https://google.com
+  expectedStatusCode: 301
+
+test name 3:
+  httpUrl: https://google.com
+  expectedStatusCode: 404
+  httpBody: '{"testKey": "awesomeValue"}'
+
