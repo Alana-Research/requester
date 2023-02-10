@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
+	"strconv"
 	"sync"
 
 	tlog "github.com/Alana-Research/terminal-app-log"
@@ -12,35 +14,71 @@ import (
 
 var mutex sync.Mutex
 
+const MAX_REDIRECTS int8 = 10
+
 type testEndpoint struct {
-	HttpUrl            string `yaml:"httpUrl"`
-	HttpBody           string `yaml:"httpBody"`
-	ExpectedStatusCode string `yaml:"expectedStatusCode"`
+	HttpUrl             string   `yaml:"httpUrl"`
+	HttpHeader          []string `yaml:"httpHeaders"`
+	ExpectedStatusCodes []string `yaml:"expectedStatusCodes"`
 }
 
-func (obj *testEndpoint) requestHTTP() (string, error) {
+func (obj *testEndpoint) requestHTTP() ([]string, error) {
+	url := obj.HttpUrl
+	respCodes := []string{}
+	var counter int8 = 0
 
-	//if body do the request with the body
+	for counter <= MAX_REDIRECTS {
+		client := &http.Client{
+			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+				return http.ErrUseLastResponse
+			}}
 
-	return "200", nil
+		resp, err := client.Get(url)
+		if err != nil {
+			return nil, err
+		}
+
+		respCodes = append(respCodes, strconv.Itoa(resp.StatusCode))
+
+		if resp.StatusCode < 300 || resp.StatusCode >= 400 { //not a redirect http code
+			return respCodes, nil
+		} else {
+			url = resp.Header.Get("Location")
+			counter += 1
+		}
+	}
+	return respCodes, nil
 }
 
-func verifyStatus(statusCodeReceived string, testName string, expectedStatusCode string) bool {
-	if statusCodeReceived != expectedStatusCode {
+func verifyStatus(statusCodesReceived []string, testName string, expectedStatusCodes []string) bool {
+	fmt.Println("here")
+
+	if len(statusCodesReceived) != len(expectedStatusCodes) {
 		printFail(fmt.Sprintf("Test %s FAILED. Expected %s Received %s.",
 			testName,
-			expectedStatusCode,
-			statusCodeReceived,
+			expectedStatusCodes,
+			statusCodesReceived,
 		))
 		return false
-	} else {
-		printSuccess(fmt.Sprintf("Test %s SUCCESS. Expected %s Received %s.",
-			testName,
-			expectedStatusCode,
-			statusCodeReceived,
-		))
-		return true
 	}
+
+	for i, code := range statusCodesReceived {
+		if code != expectedStatusCodes[i] {
+			printFail(fmt.Sprintf("Test %s FAILED. Expected %s Received %s.",
+				testName,
+				expectedStatusCodes,
+				statusCodesReceived,
+			))
+			return false
+		}
+	}
+
+	printSuccess(fmt.Sprintf("Test %s SUCCESS. Expected %s Received %s.",
+		testName,
+		expectedStatusCodes,
+		statusCodesReceived,
+	))
+	return true
 }
 
 func printSuccess(text string) {
@@ -77,24 +115,24 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(len(testsData))
 
-	failedTests := 0
+	passedTests := 0
 	for testName, test := range testsData {
 		go func(test testEndpoint, testName string) {
-			statusCodeReceived, err := test.requestHTTP()
+			statusCodesReceived, err := test.requestHTTP()
 			if err != nil {
 				tlog.BigError("Cannot perform the request:", err.Error())
 				wg.Done()
 				return
 			}
-			if !verifyStatus(statusCodeReceived, testName, test.ExpectedStatusCode) {
-				failedTests += 1
+			if !verifyStatus(statusCodesReceived, testName, test.ExpectedStatusCodes) {
 				wg.Done()
 				return
 			}
+			passedTests += 1
 			wg.Done()
 		}(test, testName)
 	}
 	wg.Wait()
 	fmt.Println()
-	tlog.Info(fmt.Sprintf("TOTAL tests failed: %d/%d", failedTests, len(testsData)))
+	tlog.Info(fmt.Sprintf("TOTAL tests passed: %d/%d", passedTests, len(testsData)))
 }
