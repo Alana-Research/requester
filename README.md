@@ -2,8 +2,9 @@
 
 A simple (<500 lines of code) and concurrent tool to test HTTP requests status codes following its redirects.
 
-- Create test suites using a YAML file.
+- Only performs HEAD requests for faster response.
 - Every test runs concurrently.
+- You can create test suites using a YAML file.
 - Test that all redirects a request does are the expected.
 - No fancy and useless features, it only does one job.
 - Option to add headers to the requests.

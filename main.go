@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -15,11 +16,14 @@ import (
 var mutex sync.Mutex
 
 const MAX_REDIRECTS int8 = 10
+const REDIRECT_CODE_START int16 = 300
+const REDIRECT_CODE_END int16 = 400
 
 type testEndpoint struct {
-	HttpUrl             string   `yaml:"httpUrl"`
-	HttpHeader          []string `yaml:"httpHeaders"`
-	ExpectedStatusCodes []string `yaml:"expectedStatusCodes"`
+	HttpUrl             string              `yaml:"httpUrl"`
+	HttpHeaders         []map[string]string `yaml:"httpHeaders"`
+	ExpectedStatusCodes []string            `yaml:"expectedStatusCodes"`
+	IgnoreTLSError      bool                `yaml:"ignoreTLSError"`
 }
 
 func (obj *testEndpoint) requestHTTP() ([]string, error) {
@@ -28,19 +32,36 @@ func (obj *testEndpoint) requestHTTP() ([]string, error) {
 	var counter int8 = 0
 
 	for counter <= MAX_REDIRECTS {
+		req, err := http.NewRequest("GET", url, nil)
+
+		transport := &http.Transport{}
+		if obj.IgnoreTLSError {
+			transport = &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			}
+		}
+
 		client := &http.Client{
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
 				return http.ErrUseLastResponse
-			}}
+			},
+			Transport: transport,
+		}
 
-		resp, err := client.Get(url)
+		for _, headerMap := range obj.HttpHeaders {
+			for header, value := range headerMap {
+				req.Header.Set(header, value)
+			}
+		}
+
+		resp, err := client.Do(req)
 		if err != nil {
 			return nil, err
 		}
 
 		respCodes = append(respCodes, strconv.Itoa(resp.StatusCode))
 
-		if resp.StatusCode < 300 || resp.StatusCode >= 400 { //not a redirect http code
+		if int16(resp.StatusCode) < REDIRECT_CODE_START || int16(resp.StatusCode) >= REDIRECT_CODE_END { //not a redirect http code
 			return respCodes, nil
 		} else {
 			url = resp.Header.Get("Location")
@@ -51,8 +72,6 @@ func (obj *testEndpoint) requestHTTP() ([]string, error) {
 }
 
 func verifyStatus(statusCodesReceived []string, testName string, expectedStatusCodes []string) bool {
-	fmt.Println("here")
-
 	if len(statusCodesReceived) != len(expectedStatusCodes) {
 		printFail(fmt.Sprintf("Test %s FAILED. Expected %s Received %s.",
 			testName,
