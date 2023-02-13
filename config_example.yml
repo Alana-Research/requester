@@ -1,12 +1,14 @@
-test name 1:
-  httpUrl: https://www.google.com
-  expectedStatusCodes: ["200"]
+test-name-1:
+  httpUrl: http://example.com/notfound
+  expectedStatusCodes: ["301", "404"]
 
-test name 2:
-  httpUrl: https://google.com
-  expectedStatusCodes: ["301", "200"]
+test-name-2:
+  httpUrl: https://example.com/superauth?md5=123&&nothing=none
+  expectedStatusCodes: ["301", "403"]
+  ignoreTLSError: True 
 
-test name 3:
-  httpUrl: https://google.com/lol/wtf
-  httpHeaders: ["X-file=awesome.png"]
-  expectedStatusCodes: ["404"]
+test-name-3:
+  httpUrl: https://example.com/awesomefile
+  httpHeaders: 
+    - "X-file": "awesome.png"
+  expectedStatusCodes: ["202"]
