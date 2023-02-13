@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 )
 
 var mutex sync.Mutex
+var versionTag string
 
 const MAX_REDIRECTS int8 = 10
 const REDIRECT_CODE_START int16 = 300
@@ -73,30 +75,17 @@ func (obj *testEndpoint) requestHTTP() ([]string, error) {
 
 func verifyStatus(statusCodesReceived []string, testName string, expectedStatusCodes []string) bool {
 	if len(statusCodesReceived) != len(expectedStatusCodes) {
-		printFail(fmt.Sprintf("Test %s FAILED. Expected %s Received %s.",
-			testName,
-			expectedStatusCodes,
-			statusCodesReceived,
-		))
+		printFail(fmt.Sprintf("Test %s FAILED. Expected %s Received %s.", testName, expectedStatusCodes, statusCodesReceived))
 		return false
 	}
 
 	for i, code := range statusCodesReceived {
 		if code != expectedStatusCodes[i] {
-			printFail(fmt.Sprintf("Test %s FAILED. Expected %s Received %s.",
-				testName,
-				expectedStatusCodes,
-				statusCodesReceived,
-			))
+			printFail(fmt.Sprintf("Test %s FAILED. Expected %s Received %s.", testName, expectedStatusCodes, statusCodesReceived))
 			return false
 		}
 	}
-
-	printSuccess(fmt.Sprintf("Test %s SUCCESS. Expected %s Received %s.",
-		testName,
-		expectedStatusCodes,
-		statusCodesReceived,
-	))
+	printSuccess(fmt.Sprintf("Test %s SUCCESS. Expected %s Received %s.", testName, expectedStatusCodes, statusCodesReceived))
 	return true
 }
 
@@ -112,10 +101,10 @@ func printFail(text string) {
 	tlog.Fail(text)
 }
 
-func getTestsFromYaml(testsData *map[string]testEndpoint) {
-	testsFile, err := ioutil.ReadFile("config.yml")
+func getTestsFromYaml(testsData *map[string]testEndpoint, configFilePath *string) {
+	testsFile, err := ioutil.ReadFile(*configFilePath)
 	if err != nil {
-		tlog.BigError("File config.yml could not be opened:", err.Error())
+		tlog.BigError("Config file could not be opened:", err.Error())
 		os.Exit(1)
 	}
 
@@ -127,9 +116,22 @@ func getTestsFromYaml(testsData *map[string]testEndpoint) {
 }
 
 func main() {
-	testsData := make(map[string]testEndpoint)
+	configFilePath := flag.String("config", "", "Config file path: --config=./path/configXX.yml")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "requester %s\nUsage:\n", versionTag)
+		flag.PrintDefaults()
+	}
 
-	getTestsFromYaml(&testsData)
+	flag.Parse()
+
+	if *configFilePath == "" {
+		tlog.BigError("Config file not found")
+		tlog.Info("Run -help")
+		os.Exit(1)
+	}
+
+	testsData := make(map[string]testEndpoint)
+	getTestsFromYaml(&testsData, configFilePath)
 
 	var wg sync.WaitGroup
 	wg.Add(len(testsData))
