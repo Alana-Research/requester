@@ -63,7 +63,7 @@ func (obj *testEndpoint) requestHTTP() ([]string, error) {
 
 		respCodes = append(respCodes, strconv.Itoa(resp.StatusCode))
 
-		if int16(resp.StatusCode) < REDIRECT_CODE_START || int16(resp.StatusCode) >= REDIRECT_CODE_END { //not a redirect http code
+		if int16(resp.StatusCode) < REDIRECT_CODE_START || int16(resp.StatusCode) >= REDIRECT_CODE_END {
 			return respCodes, nil
 		} else {
 			url = resp.Header.Get("Location")

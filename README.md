@@ -1,4 +1,4 @@
-# requester
+# requester ⚡️
 
 <p align="center" >
   <img alt="Go report card" src="https://goreportcard.com/badge/github.com/Alana-Research/requester">
@@ -11,19 +11,21 @@
 
 A simple tool (<200 lines of code) to test concurrently HTTP requests status codes following its redirects.
 
-🚀 Tests your test suite endpoints are returning the desired status code (200, 202, 401...).
+🌈 Add http headers to requests.
 
-🚀 If there should be some http redirects before hitting the endpoint you can test the request if doing them all with the desired status codes.
+🌈 Test your test suite endpoints are returning the desired status code (200, 202, 401...).
 
-🚀 No fancy and overcomplicated features.
+🌈 If there should be some http redirects before hitting the endpoint you can test the request is doing them all with the desired status codes.
 
-🚀 HEAD requests for faster response.
+🌈 No fancy and overcomplicated features.
 
-🚀 Every test runs concurrently.
+🌈 HEAD requests for faster response.
 
-🚀 You can create test suites using a YAML file.
+🌈 Every test runs concurrently.
 
-🚀 Add http headers to requests.
+🌈 You only create test suites using a YAML file.
+
+🌈 Add http headers to requests.
 
 ## How to install
 
@@ -57,13 +59,11 @@ test-name-3:
   ...
 ```
 
-
 2. Run:
 
 ```
 requester --config=/path/configXXX.yml 
 ```
-
 
 ## Roadmap
 
