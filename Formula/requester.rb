@@ -5,21 +5,21 @@
 class Requester < Formula
   desc "A simple tool (<200 lines of code) to test concurrently HTTP requests status codes following its redirects."
   homepage "https://github.com/Alana-Research/requester"
-  version "0.0.1-test"
+  version "0.0.2"
   license "MIT license"
 
   on_macos do
-    if Hardware::CPU.intel?
-      url "https://github.com/Alana-Research/requester/releases/download/v0.0.1-test/requester_0.0.1-test_Darwin_x86_64.tar.gz"
-      sha256 "c0b6cd9e1b6e582a1e33f01f2c9f29cc2ea9be97ef85023f406dc8fd4a2d0919"
+    if Hardware::CPU.arm?
+      url "https://github.com/Alana-Research/requester/releases/download/v0.0.2/requester_0.0.2_Darwin_arm64.tar.gz"
+      sha256 "60bfe87253b2cdcf3995fbc131687f06954e8562e2c424c0e09f38b2eee04a92"
 
       def install
         bin.install "requester"
       end
     end
-    if Hardware::CPU.arm?
-      url "https://github.com/Alana-Research/requester/releases/download/v0.0.1-test/requester_0.0.1-test_Darwin_arm64.tar.gz"
-      sha256 "476247d9b76533cd2839c4f54126bc8446240e6f5ccb4cca6f0af96d794843ef"
+    if Hardware::CPU.intel?
+      url "https://github.com/Alana-Research/requester/releases/download/v0.0.2/requester_0.0.2_Darwin_x86_64.tar.gz"
+      sha256 "f5410fd4f71b00ecbdff7a528e2b9392f24ed622f50c49ac8c0dd46cb7820431"
 
       def install
         bin.install "requester"
@@ -28,25 +28,25 @@ class Requester < Formula
   end
 
   on_linux do
-    if Hardware::CPU.arm? && !Hardware::CPU.is_64_bit?
-      url "https://github.com/Alana-Research/requester/releases/download/v0.0.1-test/requester_0.0.1-test_Linux_armv6.tar.gz"
-      sha256 "9f467b10f35143eae79867ea79ee640b9393e6f3590e08c7f1b452be1abe8eb6"
+    if Hardware::CPU.intel?
+      url "https://github.com/Alana-Research/requester/releases/download/v0.0.2/requester_0.0.2_Linux_x86_64.tar.gz"
+      sha256 "5a78bbe018c87b034abd0265cb6669bc978c41a59a061a58c40dcafe1beca998"
 
       def install
         bin.install "requester"
       end
     end
-    if Hardware::CPU.intel?
-      url "https://github.com/Alana-Research/requester/releases/download/v0.0.1-test/requester_0.0.1-test_Linux_x86_64.tar.gz"
-      sha256 "2661b54a21aa9a92e8fe72bd676b3730afa9e7315e437fdb2ac6df0df38e9685"
+    if Hardware::CPU.arm? && !Hardware::CPU.is_64_bit?
+      url "https://github.com/Alana-Research/requester/releases/download/v0.0.2/requester_0.0.2_Linux_armv6.tar.gz"
+      sha256 "bed6036866094a8191388922e33b721f2b7e216d57bdabfcc11c7f81e1c40679"
 
       def install
         bin.install "requester"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/Alana-Research/requester/releases/download/v0.0.1-test/requester_0.0.1-test_Linux_arm64.tar.gz"
-      sha256 "c54d2927ac29eaa696e4e6d2208247af5a08c0aed91aa097558205f3adb78fd3"
+      url "https://github.com/Alana-Research/requester/releases/download/v0.0.2/requester_0.0.2_Linux_arm64.tar.gz"
+      sha256 "0416d95195799dd5ca4e031198c6748410e67221f6040caf0f4117bc600dacda"
 
       def install
         bin.install "requester"
