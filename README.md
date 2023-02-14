@@ -12,7 +12,7 @@
 
 
 <p align="center" >
-A simple tool (<200 lines of code) to test concurrently HTTP requests status codes following its redirects.
+A simple tool (<350 lines of code) to test concurrently HTTP requests status codes following its redirects.
 </p>
 
 ---
@@ -39,6 +39,8 @@ A simple tool (<200 lines of code) to test concurrently HTTP requests status cod
 brew tap Alana-Research/requester https://github.com/Alana-Research/requester
 brew install requester
 ```
+
+Platform support: macOS-arm(apple silicon), macOS-x64, linux-arm, linux-x64, linux-x86, windows-arm, windowns-x64, windows-x86
 
 ## How to use
 
