@@ -1,4 +1,4 @@
-module requester
+module github.com/Alana-Research/requester
 
 go 1.18
 

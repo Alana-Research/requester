@@ -6,7 +6,7 @@ builds:
   - env:
       - CGO_ENABLED=0
     ldflags:
-      - -X github.com/Alana-Research/requester/main.versionTag={{ .Tag }}
+      - -X main.versionTag={{ .Tag }}
     goos:
       - linux
       - windows
