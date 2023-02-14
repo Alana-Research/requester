@@ -3,7 +3,6 @@
 </h1>
 
 <p align="center" >
-  <img alt="Go report card" src="https://goreportcard.com/badge/github.com/Alana-Research/requester">
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/Alana-Research/requester">
   <img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/Alana-Research/requester">
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/Alana-Research/requester">
