@@ -16,8 +16,6 @@ A simple tool (<350 lines of code) to test concurrently HTTP requests status cod
 
 ---
 
-⚡️ Add http headers to requests.
-
 ⚡️ Test your test suite endpoints are returning the desired status code (200, 202, 401...).
 
 ⚡️ If there should be some http redirects before hitting the endpoint you can test the request is doing them all with the desired status codes.
